@@ -3,51 +3,40 @@ const connection = require("./connection.js");
 // Object Relational Mapper (ORM)
 
 const orm = {
-	selectAll: function(tableName) {
-		let queryString = `SELECT * FROM ${tableName};`;
+	selectAll: function(table, cb) {
+		let queryString = `SELECT * FROM ${table};`;
 		connection.query(queryString, (err, result) => {
 			if (err) throw err;
 
 			console.log(result);
-			return result;
+			cb(result);
 		});
-  	},
-	insertOne: function(table, cols, vals, cb) {
-		var queryString = "INSERT INTO " + table;
+	},
 
-		queryString += " (";
-		queryString += cols.toString();
-		queryString += ") ";
-		queryString += "VALUES (";
-		queryString += printQuestionMarks(vals.length);
-		queryString += ") ";
+	create: function(table, val, cb) {
+		let queryString = `INSERT INTO ${table} (burger_name)`;
+		queryString += ` VALUES ("${val}");`;
 
 		console.log(queryString);
-
-		connection.query(queryString, vals, function(err, result) {
-	  		if (err) {
-				throw err;
-	  		}
-	  		cb(result);
-		});
-  	},
-  	updateOne: function(table, objColVals, condition, cb) {
-		var queryString = "UPDATE " + table;
-
-		queryString += " SET ";
-		queryString += objToSql(objColVals);
-		queryString += " WHERE ";
-		queryString += condition;
-
-		console.log(queryString);
-		connection.query(queryString, function(err, result) {
-			if (err) {
-				throw err;
-			}
+		connection.query(queryString, (err, result) => {
+			if (err) throw err;
 
 			cb(result);
 		});
-  	}
+	},
+
+  update: function(table, condition, cb) {
+		let queryString = `UPDATE ${table}`;
+		queryString += ` SET devoured=true`;
+		queryString += ` WHERE id=${condition};`;
+
+		console.log(queryString);
+		connection.query(queryString, (err, result) => {
+			if (err) throw err;
+
+			cb(result);
+		});
+  }
 };
 
 module.exports = orm;
